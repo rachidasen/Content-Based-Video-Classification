@@ -47,16 +47,18 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
     print "Total no of files %d"%len(total)
     print bigdataset.keys()
     print len(bigdataset['dataset1'].keys()),"Values %d"%len(bigdataset['dataset1'].values())
-    sd=0
+    # sd=0
     pkl=open('dataset_dic.pkl','wb')
     pickle.dump(bigdataset,pkl,pickle.HIGHEST_PROTOCOL)
     pkl.close()
     for key,elem in bigdataset.iteritems():
         print "writing dataset1 numpy array to file"
         if isinstance(elem,dict):
-            for im,i in elem.iteritems():
-                im=cv2.resize(img,imsize,interpolation = cv2.INTER_AREA)
-                print "category %d curent %d total %d"%(i,sd,len(files))             
+            sd=0
+            for img,i in elem.iteritems():
+                im=cv2.imread(img)
+                im=cv2.resize(im,imsize,interpolation = cv2.INTER_AREA)
+                print "category %d curent %d total %d"%(i,sd,len(elem.keys()))             
                 rs=random.random()
                 if rs<p_train:
                     if not 'X_train' in locals():
@@ -87,7 +89,7 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
                         targets_test=np.array([i])
                     else:
                         targets_test=np.concatenate((targets_test,np.array([i])))
-             
+                sd+=1
 
             # print elem
         # for image,category in bigdataset[key]:
@@ -123,9 +125,9 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
             X_train -= X_train.mean()
             X_train /= X_train.std()
 
-            batch1={'X_train':X_train,'targets_train':targets_train,'X_val':X_val,'targets_val':targets_val,'X_test':X_test,'targets_test':targets_test}
+            batch={'X_train':X_train,'targets_train':targets_train,'X_val':X_val,'targets_val':targets_val,'X_test':X_test,'targets_test':targets_test}
             pkl=open(key+'.pkl','wb')
-            pickle.dump(,pkl,pickle.HIGHEST_PROTOCOL)
+            pickle.dump(batch,pkl,pickle.HIGHEST_PROTOCOL)
             pkl.close()
 
             del targets_test
