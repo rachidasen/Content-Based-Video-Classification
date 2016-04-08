@@ -51,7 +51,7 @@ for category in classes:
                         try:
                             ret,frame=video.read()
                             if ret:
-                                pic=new+"/"+str(i)+".bmp"
+                                pic=new+"/"+str(i)+".jpg"
                                 # print pic
                                 cv2.imwrite(pic,frame)
                                 i+=1
