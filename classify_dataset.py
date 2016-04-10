@@ -58,6 +58,7 @@ def classify_dataset(imagedir='frames'):
     pickle.dump(test,pkl,pickle.HIGHEST_PROTOCOL)
     pkl.close()
 
-if__name__=="__main__":
+
+if __name__=="__main__":
 # run this programme to classify dataset where frames are present
 	classify_dataset('frames')
