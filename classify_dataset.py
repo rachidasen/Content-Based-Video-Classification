@@ -28,13 +28,13 @@ def classify_dataset(imagedir='frames'):
         length=len(files)
         # print files
         # for i in 
-        train.extend(files[:int(0.7*length)])
-        val.extend(files[int(0.7*length):int(0.8*length)])
-        test.extend(files[int(0.8*length):])
+        train.extend(files[:int(0.8*length)])
+        val.extend(files[int(0.8*length):int(0.85*length)])
+        test.extend(files[int(0.85*length):])
         # total=total+files
-        trainy.extend([i]*int(0.7*length))
-        valy.extend([i]*int(0.1*length))
-        testy.extend([i]*int(0.2*length))
+        trainy.extend([i]*int(0.8*length))
+        valy.extend([i]*int(0.05*length))
+        testy.extend([i]*int(0.15*length))
     # print total
     train=zip(train,trainy)
     val=zip(val,valy)
@@ -58,4 +58,6 @@ def classify_dataset(imagedir='frames'):
     pickle.dump(test,pkl,pickle.HIGHEST_PROTOCOL)
     pkl.close()
 
-classify_dataset('frames')
+if__name__=="__main__":
+# run this programme to classify dataset where frames are present
+	classify_dataset('frames')
