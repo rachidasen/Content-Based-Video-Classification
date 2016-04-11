@@ -20,7 +20,7 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
   pkl=open('training.pkl','rb')
   total=pickle.load(pkl)
   print (len(total))
-  dist=len(total)/ 661
+  dist=len(total)/ 19
   # for i in range()
   # bigdataset={}
 
@@ -33,7 +33,7 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
           bigdataset["dataset"+str(j)]={}
           # j+=1
       bigdataset["dataset"+str(j)][total[i][0]]=total[i][1]
-  for j in range(21):
+  for j in range(19):
       print ("len %d"%len(bigdataset['dataset'+str(j)].keys()),"Values %d"%len(bigdataset['dataset'+str(j)].values()))
 
 
