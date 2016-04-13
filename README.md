@@ -35,4 +35,13 @@ f = bob.io.base.HDF5File('testfile1.hdf5') #read only
  [2 3]]
 >>> del f
 
+*********************************************
+            DATASET DETAILS
+**********************************************
+********SPATIAL (SPLIT INTO 19 DATASETS) 
+>>Total no.of (training) frames (size[200,200])= 243561
+>>Total no.of (validation) frames            = 15217
+>>Total no.of (testing                       = 45664 
+   
+
 

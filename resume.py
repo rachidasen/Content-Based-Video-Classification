@@ -65,7 +65,53 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
        
  
  
- 
+def load_test_data(imsize=(200,200)):
+    f=open("testing.pkl",'r')
+    data=pickle.load(f)
+
+    for image,i in data:
+        im=cv2.imread(image)
+        im=cv2.resize(im,imsize,interpolation = cv2.INTER_AREA)
+        if not 'X_test' in locals():
+            X_test=im[None,...]
+        else:
+            X_test=np.concatenate((X_train,im[None,...]), axis=0)  
+        if not 'targets_test' in locals():
+            targets_test=np.array([i])
+        else:  
+            targets_test=np.concatenate((targets_test,np.array([i])))
+        
+    testing={'x_test':X_test,'targets_test':targets_test}
+    f=open('tesingdataset','wb')
+    pickle.dump(testing,f,pickle.HIGHEST_PROTOCOL)
+    f.close()
+    del data
+    
+    
+        
+def load_val_data(imsize=(200,200)):
+    f=open("validation.pkl",'r')
+    data=pickle.load(f)
+    sd=0
+    for image,i in data:
+        im=cv2.imread(image)
+        im=cv2.resize(im,imsize,interpolation = cv2.INTER_AREA)
+        if not 'X_val' in locals():
+            X_val=im[None,...]
+        else:
+            X_val=np.concatenate((X_val,im[None,...]), axis=0)  
+        if not 'targets_test' in locals():
+            targets_val=np.array([i])
+        else:  
+            targets_val=np.concatenate((targets_val,np.array([i])))
+        sd+=1
+        print ("current image %d TOTAL %d")%(sd,len(data))
+    validation={'x_val':X_val,'targets_val':targets_val}
+    f=open('valdiationdataset','wb')
+    pickle.dump(validation,f,pickle.HIGHEST_PROTOCOL)
+    f.close()
+    del data
+    
    
  
  
@@ -76,4 +122,5 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
  
 # Run following code when the program starts
 if __name__ == '__main__':
-  load_Imagedata('frames')
+  # load_Imagedata('frames')
+  load_val_data()
