@@ -52,10 +52,10 @@ def classify_dataset(imagedir='frames'):
     pickle.dump(train,pkl,pickle.HIGHEST_PROTOCOL)
     pkl.close()
     pkl=open('testing.pkl','wb')
-    pickle.dump(val,pkl,pickle.HIGHEST_PROTOCOL)
+    pickle.dump(test,pkl,pickle.HIGHEST_PROTOCOL)
     pkl.close()
     pkl=open('validation.pkl','wb')
-    pickle.dump(test,pkl,pickle.HIGHEST_PROTOCOL)
+    pickle.dump(val,pkl,pickle.HIGHEST_PROTOCOL)
     pkl.close()
 
 
