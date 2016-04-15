@@ -1,4 +1,4 @@
-
+import time
 from random import randint
 import time
 import pickle
@@ -8,6 +8,7 @@ import sys
 import glob
 import cv2
 import random
+import matplotlib.pyplot as plt
 import bob.io.base
  
 bigdataset={}
@@ -53,8 +54,18 @@ def load_Imagedata(imagedir='frames', minNumSamplesPerClass=100, imsize=(200,200
     if isinstance(elem,dict):
         sd=0
         for img,i in elem.iteritems():
+            plt.figure(1)
+            plt.subplot(211)
             im=cv2.imread(img)
-            im=cv2.resize(im,imsize,interpolation = cv2.INTER_AREA)
+            plt.imshow(im)
+            # plt.show()
+            # time.sleep(1)
+            im=cv2.resize(im,(100,100),interpolation = cv2.INTER_AREA)
+            plt.subplot(212)
+            plt.imshow(im)
+            plt.show()
+            time.sleep(1)
+            # plt.wait(600)
             print "category %d curent %d total %d"%(i,sd,len(elem.keys()))           
             rs=random.random()
             if not 'X_train' in locals():
