@@ -39,9 +39,16 @@ f = bob.io.base.HDF5File('testfile1.hdf5') #read only
             DATASET DETAILS
 **********************************************
 ********SPATIAL (SPLIT INTO 19 DATASETS) 
->>Total no.of (training) frames (size[200,200])= 243561
+>>Total no.of (training) frames (size[150,150])= 243561
 >>Total no.of (validation) frames            = 15217
 >>Total no.of (testing                       = 45664 
+
+
+*****SPATIAL IMAGE **********************
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+USING VGG_NET
+-----------
+
    
 
 
