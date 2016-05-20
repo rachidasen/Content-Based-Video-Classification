@@ -28,6 +28,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import LabelEncoder
 import theano
 import cv2
+import numpy
+import random
 from theano import tensor as T
 
 from . import PrintLog
@@ -68,15 +70,22 @@ class Layers(OrderedDict):
 
 
 class BatchIterator(object):
-    def __init__(self, batch_size, shuffle=False, seed=42):
+    def __init__(self, path, batch_size, shuffle=False, seed=42):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.random = np.random.RandomState(seed)
+        self.path= path
+
+    def dis(self):
+        print self.path
 
     def __call__(self, X, y=None):
         if self.shuffle:
             self._shuffle_arrays([X, y] if y is not None else [X], self.random)
+
         self.X, self.y = X, y
+        # self.path=path
+        # self.path=path
         return self
 
     def __iter__(self):
@@ -84,21 +93,30 @@ class BatchIterator(object):
         for i in range((self.n_samples + bs - 1) // bs):
             sl = slice(i * bs, (i + 1) * bs)
             Xb = _sldict(self.X, sl)
-            path='/home/raghib/major_pro/video_classification/dataset/'
+            # path='/home/bashir/major_pro/dataset/store/'
+            # print "len",len(Xb)
+            # print self.path
+            # path=self.path
             for img in Xb:
-                im=cv2.imread(path+img)
+
+                im=numpy.load(self.path+img)
                 # initial=random.randint(0,119)
                 # final=random.randint(0,39)
                 # im=im[initial:initial+200,final:final+200]
                 # rs=random.random()
-                im=cv2.resize(im,(200,200),interpolation = cv2.INTER_AREA)
+                # im=cv2.resize(im,(150,150),interpolation = cv2.INTER_AREA)
+                # print im.shape
+                im=im/255
+                
                 if not 'X_tin' in locals():
                     X_tin=im[None,...]
                 else:
                     X_tin=np.concatenate((X_tin,im[None,...]), axis=0)
             Xb=X_tin
             del X_tin
-            Xb=Xb.reshape((Xb.shape[0],Xb.shape[3],Xb.shape[1],Xb.shape[2]))
+            # Xb=Xb.reshape((Xb.shape[0],Xb.shape[3],Xb.shape[1],Xb.shape[2]))
+
+            # print type(Xb)
             if self.y is not None:
                 yb = self.y[sl]
             else:
@@ -207,8 +225,7 @@ class NeuralNet(BaseEstimator):
         loss=None,  # BBB
         objective=objective,
         objective_loss_function=None,
-        batch_iterator_train=BatchIterator(batch_size=128),
-        batch_iterator_test=BatchIterator(batch_size=128),
+       
         regression=False,
         max_epochs=100,
         train_split=TrainSplit(eval_size=0.2),
@@ -223,6 +240,10 @@ class NeuralNet(BaseEstimator):
         more_params=None,
         check_input=True,
         verbose=0,
+        path=None,
+        batch_iterator_train=BatchIterator(path='/home/bashir/major_pro/dataset/store/',batch_size=128),
+        batch_iterator_test=BatchIterator(path='/home/bashir/major_pro/dataset/store/',batch_size=128),
+        save_weight=None,
         **kwargs
         ):
         """:param layers: A list of lasagne layers to compose into the final
@@ -305,6 +326,7 @@ class NeuralNet(BaseEstimator):
         self.layers = layers
         self.update = update
         self.objective = objective
+        self.path=path
         self.objective_loss_function = objective_loss_function
         self.batch_iterator_train = batch_iterator_train
         self.batch_iterator_test = batch_iterator_test
@@ -321,6 +343,8 @@ class NeuralNet(BaseEstimator):
         self.more_params = more_params or {}
         self.check_input = check_input
         self.verbose = verbose
+        
+        self.save_weight=save_weight
         if self.verbose:
             # XXX: PrintLog should come before any other handlers,
             # because early stopping will otherwise cause the last
@@ -397,6 +421,11 @@ class NeuralNet(BaseEstimator):
                 collected[key[len(prefix):]] = value
 
         return collected
+
+    def _got(self):
+        print type(self.path)
+        print self.path
+        print "ans"
 
     def _layer_name(self, layer_class, index):
         return "{}{}".format(
@@ -586,6 +615,7 @@ class NeuralNet(BaseEstimator):
         num_epochs_past = len(self.train_history_)
 
         while epoch < epochs:
+
             epoch += 1
 
             train_losses = []
@@ -597,59 +627,46 @@ class NeuralNet(BaseEstimator):
                 custom_scores = []
 
             t0 = time()
-
-            batch_train_sizes = []
+            # Xb,yb, size is same as batch size
             for Xb, yb in self.batch_iterator_train(X_train, y_train):
-                # path='/home/raghib/major_pro/video_classification/dataset/'
-                # for img in Xb:
+                # path='/home/bashir/major_pro/dataset/store/'
+                # for img in X:
                 #     im=cv2.imread(path+img)
                 #     # initial=random.randint(0,119)
                 #     # final=random.randint(0,39)
                 #     # im=im[initial:initial+200,final:final+200]
                 #     # rs=random.random()
-                #     im=cv2.resize(im,(150,150),interpolation = cv2.INTER_AREA)
+                #     im=cv2.resize(im,(200,200),interpolation = cv2.INTER_AREA)
                 #     if not 'X_tin' in locals():
                 #         X_tin=im[None,...]
                 #     else:
                 #         X_tin=np.concatenate((X_tin,im[None,...]), axis=0)
                 # Xb=X_tin
-                # del X_tin
                 # Xb=Xb.reshape((Xb.shape[0],Xb.shape[3],Xb.shape[1],Xb.shape[2]))
-                # print "type",Xb.shape,yb.shape
+
                 batch_train_loss = self.apply_batch_func(
                     self.train_iter_, Xb, yb)
-                train_losses.append(batch_train_loss[0])
-                batch_train_sizes.append(len(Xb))
+                train_losses.append(batch_train_loss)
 
                 for func in on_batch_finished:
                     func(self, self.train_history_)
 
-            batch_valid_sizes = []
             for Xb, yb in self.batch_iterator_test(X_valid, y_valid):
                 batch_valid_loss, accuracy = self.apply_batch_func(
                     self.eval_iter_, Xb, yb)
                 valid_losses.append(batch_valid_loss)
                 valid_accuracies.append(accuracy)
-                batch_valid_sizes.append(len(Xb))
 
                 if self.custom_scores:
                     y_prob = self.apply_batch_func(self.predict_iter_, Xb)
-                    for custom_scorer, custom_score in zip(
-                            self.custom_scores, custom_scores):
-                        custom_score.append(custom_scorer[1](yb, y_prob))
+                    for custom_scorer, custom_score in zip(self.custom_scores, custom_scores):
+                            custom_score.append(custom_scorer[1](yb, y_prob))
 
-            avg_train_loss = np.average(
-                train_losses, weights=batch_train_sizes)
-            if batch_valid_sizes:
-                avg_valid_loss = np.average(
-                    valid_losses, weights=batch_valid_sizes)
-            else:
-                avg_valid_loss = np.nan
-
+            avg_train_loss = np.mean(train_losses)
+            avg_valid_loss = np.mean(valid_losses)
             avg_valid_accuracy = np.mean(valid_accuracies)
             if custom_scores:
-                avg_custom_scores = np.average(
-                    custom_scores, weights=batch_valid_sizes, axis=1)
+                avg_custom_scores = np.mean(custom_scores, axis=1)
 
             if avg_train_loss < best_train_loss:
                 best_train_loss = avg_train_loss
@@ -675,6 +692,10 @@ class NeuralNet(BaseEstimator):
                     func(self, self.train_history_)
             except StopIteration:
                 break
+            # path='/home/bashir/major_pro/dataset/store/'
+            self.save_params_to(self.path+self.save_weight)
+
+
 
         for func in on_training_finished:
             func(self, self.train_history_)
