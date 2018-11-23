@@ -1,0 +1,13 @@
+Total frames  304459
+
+To generate frames of the video 
+Run gen_frames.py
+
+Classifying the dataset ('training','validation','testing')
+Run classify_dataset.py
+
+Perform Data Augmentation on frames
+Run data_aug.py
+
+Performing Training on AlexNet
+Model.ipynb
