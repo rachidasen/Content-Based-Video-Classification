@@ -1,9 +1,9 @@
 # major
 **PREREQUISITES
 sudo apt-get install python-software-properties #to install "add-apt-repository"
-$ sudo add-apt-repository ppa:biometrics/bob #only the first time
-$ sudo apt-get update #repeat this every time you need to update
-$ sudo apt-get install bob
+sudo add-apt-repository ppa:biometrics/bob #only the first time
+sudo apt-get update #repeat this every time you need to update
+sudo apt-get install bob
 
 ******************************************************
       SAVING NUMPY ARRAY TO HDF
